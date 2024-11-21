@@ -57,4 +57,23 @@ public class VendorTest {
         assertFalse(v.isInventoryEmpty(), "Inventory should not be empty initially.");
     }
 
+    @Test
+    void testRestockItem()
+    {
+        assertEquals(5, v.getStock("Candy"));
+        assertEquals(5, v.getStock("Gum"));
+
+        v.restockItem("Candy", 3);
+        v.restockItem("Gum", 2);
+
+        assertEquals(8, v.getStock("Candy")); // 5 initial + 3 restocked
+        assertEquals(7, v.getStock("Gum"));   // 5 initial + 2 restocked
+    }
+
+    @Test
+    void testRestockNonExistentItem()
+    {
+        v.restockItem("Soda", 10); // This should print "Item not found in stock"
+    }
+
 }
