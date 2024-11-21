@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class VendorTest {
@@ -33,8 +34,27 @@ public class VendorTest {
     }
 
     @Test
-    void addition() {
-        assertEquals(2, 1 + 1);
+    void testEmptyInventory()
+    {
+        v.addMoney(20.00);
+
+        while (v.getStock("Candy") > 0)
+        {
+            v.select("Candy");
+        }
+
+        while (v.getStock("Gum") > 0)
+        {
+            v.select("Gum");
+        }
+
+        assertTrue(v.isInventoryEmpty(), "The inventory should be empty after all items are purchased.");
+    }
+
+    @Test
+    void testInventoryNotEmpty()
+    {
+        assertFalse(v.isInventoryEmpty(), "Inventory should not be empty initially.");
     }
 
 }
