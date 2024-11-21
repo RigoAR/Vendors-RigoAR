@@ -21,8 +21,15 @@ public class VendorTest {
     }
 
     @Test
-    void buyTest() {
-        assertEquals(2, 1 + 1);
+    void testBuyItem() {
+        v.addMoney(2.00);
+
+        assertEquals(5, v.getStock("Candy"), "Initial Candy stock should be 5.");
+
+        v.select("Candy");
+
+        assertEquals(4, v.getStock("Candy"), "Candy stock should decrease by 1 after purchase.");
+        assertEquals(0.75, v.getBalance(), "Balance should decrease by the item's price ($1.25).");
     }
 
     @Test
