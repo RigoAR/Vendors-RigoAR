@@ -57,6 +57,15 @@ class Vending {
         return -1;
     }
 
+    boolean isInventoryEmpty() {
+        for (Item item : Stock.values()) {
+            if (item.stock > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }
 
 class Examples {
