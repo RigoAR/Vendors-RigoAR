@@ -73,7 +73,15 @@ public class VendorTest {
     @Test
     void testRestockNonExistentItem()
     {
-        v.restockItem("Soda", 10); // This should print "Item not found in stock"
+        v.restockItem("Soda", 10);
+        assertEquals(10, v.getStock("Soda"));
+    }
+
+    @Test
+    void testRestockItemAlreadyInStock()
+    {
+        v.restockItem("Candy", 5);
+        assertEquals(10, v.getStock("Candy"));
     }
 
 }
