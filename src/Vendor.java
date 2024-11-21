@@ -66,6 +66,14 @@ class Vending {
         return true;
     }
 
+    void restockItem(String itemName, int amount) {
+        if (Stock.containsKey(itemName)) {
+            Stock.get(itemName).restock(amount);
+        } else {
+            System.out.println("Item not found in stock");
+        }
+    }
+
 }
 
 class Examples {
