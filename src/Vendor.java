@@ -10,13 +10,15 @@ class Vending {
     private HashMap<String, Item> inventory;
     private HashMap<String, Integer> purchaseTrends;
 
-    Vending() {
+
+    public Vending() {
         inventory = new HashMap<>();
         purchaseTrends = new HashMap<>();
         this.balance = 0;
 
-        inventory.put("Candy", new Item("Candy", 1.25, 5));
-        inventory.put("Gum", new Item("Gum", 0.75, 5));
+
+        inventory.put("Candy", new Item("Candy", 1.25, 5, "A sweet and chewy treat."));
+        inventory.put("Gum", new Item("Gum", 0.75, 5, "Refreshing mint-flavored gum."));
     }
 
     public Vending(int candyStock, int gumStock) {
@@ -24,8 +26,8 @@ class Vending {
         purchaseTrends = new HashMap<>();
         this.balance = 0;
 
-        inventory.put("Candy", new Item("Candy", 1.25, candyStock));
-        inventory.put("Gum", new Item("Gum", 0.75, gumStock));
+        inventory.put("Candy", new Item("Candy", 1.25, candyStock, "A sweet and chewy treat."));
+        inventory.put("Gum", new Item("Gum", 0.75, gumStock, "Refreshing mint-flavored gum."));
     }
 
     public void addMoney(double amount) {
@@ -39,6 +41,11 @@ class Vending {
     public int getStock(String itemName) {
         Item item = inventory.get(itemName);
         return item != null ? item.getStock() : -1;
+    }
+
+    public String getItemDescription(String itemName) {
+        Item item = inventory.get(itemName);
+        return item != null ? item.getDescription() : "Item not found.";
     }
 
     public void select(String itemName) {
@@ -57,19 +64,28 @@ class Vending {
     public void restockItem(String itemName, int quantity) {
         Item item = inventory.get(itemName);
         if (item != null) {
-            item.restock(quantity);
+            item.increaseStock(quantity);
         } else {
-            inventory.put(itemName, new Item(itemName, 1.00, quantity)); // Default price
+            inventory.put(itemName, new Item(itemName, 1.00, quantity, "Default description"));
         }
     }
 
     public int renameItem(String oldName, String newName) {
-        Item item = inventory.remove(oldName);
-        if (item != null) {
-            inventory.put(newName, item);
-            return item.getStock();
+        if (!inventory.containsKey(oldName)) {
+            return -1;
         }
-        return -1;
+
+
+        if (inventory.containsKey(newName)) {
+            return -1;
+        }
+
+
+        Item item = inventory.remove(oldName);
+
+        inventory.put(newName, item);
+
+        return item.getStock();
     }
 
     public void removeItem(String itemName) {
