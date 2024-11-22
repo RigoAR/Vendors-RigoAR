@@ -82,11 +82,17 @@ public class VendorTest {
         assertEquals(v.getStock(null), v.getStock("Soda"));
     }
 
+    @Test
     void testRenameItemWithNewNameAlreadyExist() {
-        v.renameItem("Candy", "Gum");
+        Vending v = new Vending();
 
-        assertEquals(-1, v.getStock("Candy"), "Candy should not be renamed to Gum.");
-        assertEquals(5, v.getStock("Gum"), "Gum should retain its original stock value after renaming.");
+        int result = v.renameItem("Candy", "Gum");
+
+        assertEquals(-1, result, "Renaming 'Candy' to 'Gum' should return -1, as 'Gum' already exists.");
+
+        assertEquals(5, v.getStock("Candy"), "'Candy' should still have its original stock of 5.");
+
+        assertEquals(5, v.getStock("Gum"), "'Gum' should retain its original stock of 5.");
     }
 
     @Test
@@ -213,6 +219,109 @@ public class VendorTest {
 
         assertEquals(1.125, v.getItem("Candy").getPrice(), 0.0001, "Price of Candy should be $1.125 after 10% discount");
         assertEquals(0.60, v.getItem("Gum").getPrice(), 0.0001, "Price of Gum should be $0.80 after 20% discount");
+    }
+
+    @Test
+    void testSetPriceValid() {
+        Vending vendingMachine = new Vending();
+        vendingMachine.setPrice("Candy", 1.50);
+
+        assertEquals(1.50, vendingMachine.getItem("Candy").getPrice(), "Price of Candy should be updated to $1.50");
+    }
+
+    @Test
+    void testSetPriceInvalidNegative() {
+        Vending vendingMachine = new Vending();
+        vendingMachine.setPrice("Candy", -1.50);
+
+        assertEquals(1.25, vendingMachine.getItem("Candy").getPrice(), "Price of Candy should remain $1.25 since negative prices are invalid");
+    }
+
+    @Test
+    void testSetPriceNonExistentItem() {
+        Vending vendingMachine = new Vending();
+        vendingMachine.setPrice("Soda", 1.25);
+
+        assertNull(vendingMachine.getItem("Soda"), "Soda should not exist in the inventory");
+    }
+
+    @Test
+    void testSetPriceForZeroStockItem() {
+        Vending vendingMachine = new Vending();
+        vendingMachine.restockItem("Candy", 0);
+        vendingMachine.setPrice("Candy", 2.00);
+
+        assertEquals(2.00, vendingMachine.getItem("Candy").getPrice(), "Price of Candy should be updated even if stock is 0");
+    }
+
+    @Test
+    void testSetPriceForMultipleItems() {
+        Vending vendingMachine = new Vending();
+        vendingMachine.setPrice("Candy", 2.00);
+        vendingMachine.setPrice("Gum", 1.00);
+
+        assertEquals(2.00, vendingMachine.getItem("Candy").getPrice(), "Price of Candy should be updated to $2.00");
+        assertEquals(1.00, vendingMachine.getItem("Gum").getPrice(), "Price of Gum should be updated to $1.00");
+    }
+
+    @Test
+    void testSetPriceForItemWithDiscount() {
+        Vending vendingMachine = new Vending();
+        vendingMachine.applyDiscount("Candy", 0.20);
+        vendingMachine.setPrice("Candy", 1.75);
+
+        assertEquals(1.75, vendingMachine.getItem("Candy").getPrice(), "Price of Candy should be updated to $1.75");
+    }
+
+    @Test
+    void testMarkItemAsBestseller() {
+        Vending vendingMachine = new Vending();
+
+        vendingMachine.setBestseller("Candy", true);
+
+        assertTrue(vendingMachine.isBestseller("Candy"), "Candy should be marked as a bestseller");
+    }
+
+    @Test
+    void testMarkItemAsNotBestseller() {
+        Vending vendingMachine = new Vending();
+
+
+        vendingMachine.setBestseller("Candy", true);
+
+        vendingMachine.setBestseller("Candy", false);
+
+        assertFalse(vendingMachine.isBestseller("Candy"), "Candy should not be marked as a bestseller");
+    }
+
+    @Test
+    void testMarkNonExistentItemAsBestseller() {
+        Vending vendingMachine = new Vending();
+
+        vendingMachine.setBestseller("Soda", true);
+
+        assertFalse(vendingMachine.isBestseller("Soda"), "Soda should not be marked as a bestseller");
+    }
+
+    @Test
+    void testMarkMultipleItemsAsBestsellers() {
+        Vending vendingMachine = new Vending();
+
+        vendingMachine.setBestseller("Candy", true);
+        vendingMachine.setBestseller("Gum", true);
+
+        assertTrue(vendingMachine.isBestseller("Candy"), "Candy should be a bestseller");
+        assertTrue(vendingMachine.isBestseller("Gum"), "Gum should be a bestseller");
+    }
+
+    @Test
+    void testCheckBestsellerStatusForItems() {
+        Vending vendingMachine = new Vending();
+
+        vendingMachine.setBestseller("Candy", true);
+
+        assertTrue(vendingMachine.isBestseller("Candy"), "Candy should be a bestseller");
+        assertFalse(vendingMachine.isBestseller("Gum"), "Gum should not be a bestseller");
     }
 
 }
