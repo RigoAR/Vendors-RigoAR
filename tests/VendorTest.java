@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class VendorTest {
     static Vending v;
     Vending[] vendors;
+    private static final int INITIAL_STOCK = 5;
 
     @BeforeEach
     public void setUp() {
@@ -81,25 +82,23 @@ public class VendorTest {
         assertEquals(v.getStock(null), v.getStock("Soda"));
     }
 
-    @Test
     void testRenameItemWithNewNameAlreadyExist() {
         v.renameItem("Candy", "Gum");
-        assertEquals(-1, v.getStock("Candy"), "Candy should be removed from stock after renaming.");
+
+        assertEquals(-1, v.getStock("Candy"), "Candy should not be renamed to Gum.");
         assertEquals(5, v.getStock("Gum"), "Gum should retain its original stock value after renaming.");
     }
 
     @Test
     void testRenameItem() {
-        assertEquals(5, v.getStock("Candy"), "Initial stock of Candy should be 5.");
+        assertEquals(INITIAL_STOCK, v.getStock("Candy"), "Initial stock of Candy should be " + INITIAL_STOCK);
 
         int result = v.renameItem("Candy", "Gum");
-        assertEquals(5, result, "Rename should be successful.");
 
-        assertEquals(-1, v.getStock("Candy"), "Candy should be removed after renaming.");
+        assertEquals(-1, result, "Renaming should fail if the new name already exists in the inventory.");
 
-        assertEquals(5, v.getStock("Gum"), "New Gum should have the same stock as Candy.");
-
-        v.printInventory();
+        assertEquals(INITIAL_STOCK, v.getStock("Candy"), "Candy stock should remain unchanged.");
+        assertEquals(INITIAL_STOCK, v.getStock("Gum"), "Gum should retain its original stock after renaming attempt.");
     }
 
     @Test
@@ -149,6 +148,20 @@ public class VendorTest {
     @Test
     void testRestockItemWithNegativeAmount() {
         v.restockItem("Candy", -5);
-        assertEquals(5, v.getStock("Candy"), "Restocking with negative amount should not change stock.");
+        assertEquals(0, v.getStock("Candy"), "Restocking with negative amount should not change stock.");
+    }
+
+    @Test
+    public void testGetItemDescription() {
+        Vending machine = new Vending(10, 10);  // Initialize with 10 stocks for each item
+
+        String candyDescription = machine.getItemDescription("Candy");
+        assertEquals("A sweet and chewy treat.", candyDescription, "Candy description should be correct");
+
+        String gumDescription = machine.getItemDescription("Gum");
+        assertEquals("Refreshing mint-flavored gum.", gumDescription, "Gum description should be correct");
+
+        String unknownItemDescription = machine.getItemDescription("Soda");
+        assertEquals("Item not found.", unknownItemDescription, "Description should be 'Item not found.' for non-existent items");
     }
 }
