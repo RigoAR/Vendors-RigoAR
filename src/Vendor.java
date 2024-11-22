@@ -1,96 +1,86 @@
 import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Class for a Vending Machine.  Contains a hashtable mapping item names to item data, as
+ * Class for a Vending Machine. Contains a hashtable mapping item names to item data, as
  * well as the current balance of money that has been deposited into the machine.
  */
 class Vending {
-    private HashMap<String, Item> Stock = new HashMap<>();
     private double balance;
+    private HashMap<String, Item> inventory;
+    private HashMap<String, Integer> purchaseTrends;
 
-    Vending(int numCandy, int numGum) {
-        Stock.put("Candy", new Item(1.25, numCandy));
-        Stock.put("Gum", new Item(0.5, numGum));
+    Vending() {
+        inventory = new HashMap<>();
+        purchaseTrends = new HashMap<>();
         this.balance = 0;
+
+        inventory.put("Candy", new Item("Candy", 1.25, 5));
+        inventory.put("Gum", new Item("Gum", 0.75, 5));
     }
 
-    void resetBalance() {
+    public Vending(int candyStock, int gumStock) {
+        inventory = new HashMap<>();
+        purchaseTrends = new HashMap<>();
         this.balance = 0;
+
+        inventory.put("Candy", new Item("Candy", 1.25, candyStock));
+        inventory.put("Gum", new Item("Gum", 0.75, gumStock));
     }
 
-    double getBalance() {
-        return this.balance;
+    public void addMoney(double amount) {
+        balance += amount;
     }
 
-    void addMoney(double amt) {
-        this.balance = this.balance + amt;
+    public double getBalance() {
+        return balance;
     }
 
-    void select(String name) {
-        if (Stock.containsKey(name)) {
-            Item item = Stock.get(name);
-            if (balance >= item.price) {
-                item.purchase(1);
-                this.balance = this.balance - item.price;
-            } else
-                System.out.println("Gimme more money");
+    public int getStock(String itemName) {
+        Item item = inventory.get(itemName);
+        return item != null ? item.getStock() : -1;
+    }
+
+    public void select(String itemName) {
+        Item item = inventory.get(itemName);
+        if (item != null && item.getStock() > 0 && balance >= item.getPrice()) {
+            item.decreaseStock();
+            balance -= item.getPrice();
+            purchaseTrends.put(itemName, purchaseTrends.getOrDefault(itemName, 0) + 1);
+        }
+    }
+
+    public boolean isInventoryEmpty() {
+        return inventory.values().stream().allMatch(item -> item.getStock() == 0);
+    }
+
+    public void restockItem(String itemName, int quantity) {
+        Item item = inventory.get(itemName);
+        if (item != null) {
+            item.restock(quantity);
         } else {
-            System.out.println("Sorry, don't know that item");
-        }
-    }
-
-    int getStock(String itemName) {
-        if (Stock.containsKey(itemName)) {
-            return Stock.get(itemName).stock;
-        }
-        return -1;
-    }
-
-    boolean isInventoryEmpty() {
-        for (Item item : Stock.values()) {
-            if (item.stock > 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    void restockItem(String itemName, int amount) {
-        if (Stock.containsKey(itemName)) {
-            Stock.get(itemName).restock(amount);
-        } else {
-            Stock.put(itemName, new Item(1.00, amount));
-            System.out.println("Added new item to stock: " + itemName);
+            inventory.put(itemName, new Item(itemName, 1.00, quantity)); // Default price
         }
     }
 
     public int renameItem(String oldName, String newName) {
-        if (Stock.containsKey(oldName)) {
-            Item item = Stock.get(oldName);
-            Stock.remove(oldName);
-            Stock.put(newName, new Item(item.price, item.stock));
-            System.out.println("Item renamed from " + oldName + " to " + newName);
-            return 10;
-        } else {
-            System.out.println("Item not found to rename");
-            return -1;
+        Item item = inventory.remove(oldName);
+        if (item != null) {
+            inventory.put(newName, item);
+            return item.getStock();
         }
+        return -1;
     }
 
-    void removeItem(String name) {
-        if (Stock.containsKey(name)) {
-            Stock.remove(name);
-            System.out.println(name + " has been removed.");
-        } else {
-            System.out.println(name + " not found.");
-        }
+    public void removeItem(String itemName) {
+        inventory.remove(itemName);
     }
 
-    void printInventory() {
-        System.out.println("Inventory for Vendor:");
-        for (String itemName : Stock.keySet()) {
-            Item item = Stock.get(itemName);
-            System.out.println(itemName + ": " + item.getStock() + " available");
-        }
+    public Map<String, Integer> getPurchaseTrends() {
+        return purchaseTrends;
+    }
+
+    public void printInventory() {
+        inventory.forEach((key, item) -> System.out.println(key + ": " + item.getStock() + " in stock"));
     }
 }
