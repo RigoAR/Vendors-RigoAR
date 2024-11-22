@@ -118,4 +118,12 @@ class Vending {
     public void printInventory() {
         inventory.forEach((key, item) -> System.out.println(key + ": " + item.getStock() + " in stock"));
     }
+    public void setPrice(String itemName, double newPrice) {
+        Item item = getItem(itemName);
+        if (item != null && newPrice > 0) {
+            item.setPrice(newPrice);
+        } else {
+            System.out.println("Item not found or invalid price.");
+        }
+    }
 }
