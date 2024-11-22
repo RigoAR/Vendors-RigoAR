@@ -153,7 +153,7 @@ public class VendorTest {
 
     @Test
     public void testGetItemDescription() {
-        Vending machine = new Vending(10, 10);  // Initialize with 10 stocks for each item
+        Vending machine = new Vending(10, 10);
 
         String candyDescription = machine.getItemDescription("Candy");
         assertEquals("A sweet and chewy treat.", candyDescription, "Candy description should be correct");
@@ -164,4 +164,55 @@ public class VendorTest {
         String unknownItemDescription = machine.getItemDescription("Soda");
         assertEquals("Item not found.", unknownItemDescription, "Description should be 'Item not found.' for non-existent items");
     }
+
+    @Test
+    void testApplyDiscountToItem() {
+        v.addMoney(5.00);
+        assertEquals(1.25, v.getItem("Candy").getPrice(), "Initial price of Candy should be $1.25");
+        v.applyDiscount("Candy", 0.20);
+        assertEquals(1.00, v.getItem("Candy").getPrice(), "Price of Candy should be $1.00 after 20% discount");
+    }
+
+    @Test
+    void testApplyDiscountToNonExistentItem() {
+        v.applyDiscount("Soda", 0.15);
+        Item soda = v.getItem("Soda");
+        assertNull(soda, "Soda should not exist in the inventory.");
+    }
+
+    @Test
+    void testApplyCategoryDiscount() {
+        v.addMoney(10.00);
+        v.applyCategoryDiscount(new String[]{"Candy", "Gum"}, 0.10);
+        assertEquals(1.125, v.getItem("Candy").getPrice(), "Price of Candy should be $1.125 after 10% discount");
+        assertEquals(0.675, v.getItem("Gum").getPrice(), "Price of Gum should be $0.675 after 10% discount");
+    }
+
+    @Test
+    void testApplyNegativeDiscount() {
+        v.addMoney(5.00);
+        v.applyDiscount("Candy", -0.20);
+        assertEquals(1.25, v.getItem("Candy").getPrice(), "Price of Candy should be $1.45 after a -20% discount");
+    }
+
+    @Test
+    void testPurchaseItemAfterDiscount() {
+        v.addMoney(5.00);
+        v.applyDiscount("Candy", 0.20);
+        v.select("Candy");
+        assertEquals(4.00, v.getBalance(), "Balance should be $4.00 after purchasing Candy with a discount");
+    }
+
+    @Test
+    void testApplyMultipleDiscounts() {
+        System.out.println("Initial price of Candy: " + v.getItem("Candy").getPrice());
+        System.out.println("Initial price of Gum: " + v.getItem("Gum").getPrice());
+
+        v.applyDiscount("Candy", 0.10);
+        v.applyDiscount("Gum", 0.20);
+
+        assertEquals(1.125, v.getItem("Candy").getPrice(), 0.0001, "Price of Candy should be $1.125 after 10% discount");
+        assertEquals(0.60, v.getItem("Gum").getPrice(), 0.0001, "Price of Gum should be $0.80 after 20% discount");
+    }
+
 }
