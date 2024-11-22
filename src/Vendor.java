@@ -9,11 +9,13 @@ class Vending {
     private double balance;
     private HashMap<String, Item> inventory;
     private HashMap<String, Integer> purchaseTrends;
+    private HashMap<String, Boolean> bestsellers;
 
 
     public Vending() {
         inventory = new HashMap<>();
         purchaseTrends = new HashMap<>();
+        bestsellers = new HashMap<>();
         this.balance = 0;
 
 
@@ -28,6 +30,16 @@ class Vending {
 
         inventory.put("Candy", new Item("Candy", 1.25, candyStock, "A sweet and chewy treat."));
         inventory.put("Gum", new Item("Gum", 0.75, gumStock, "Refreshing mint-flavored gum."));
+    }
+
+    public void setBestseller(String itemName, boolean isBestseller) {
+        if (inventory.containsKey(itemName)) {
+            bestsellers.put(itemName, isBestseller);
+        }
+    }
+
+    public boolean isBestseller(String itemName) {
+        return bestsellers.getOrDefault(itemName, false);
     }
 
     public Item getItem(String itemName) {
@@ -126,4 +138,6 @@ class Vending {
             System.out.println("Item not found or invalid price.");
         }
     }
+
+
 }
