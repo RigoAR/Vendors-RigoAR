@@ -106,14 +106,11 @@ class Vending {
             return -1;
         }
 
-
         if (inventory.containsKey(newName)) {
             return -1;
         }
 
-
         Item item = inventory.remove(oldName);
-
         inventory.put(newName, item);
 
         return item.getStock();
