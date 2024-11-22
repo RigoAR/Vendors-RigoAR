@@ -5,12 +5,17 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class VendorTest {
     static Vending v;
-    private Vending vendor;
+    Vending[] vendors;
 
     @BeforeEach
     public void setUp() {
         v = new Vending(5, 5);
-        vendor = new Vending(10, 5);
+        vendors = new Vending[5];
+        vendors[0] = new Vending(5, 10);
+        vendors[1] = new Vending(10, 15);
+        vendors[2] = new Vending(7, 8);
+        vendors[3] = new Vending(3, 12);
+        vendors[4] = new Vending(6, 9);
     }
 
     @Test
@@ -85,8 +90,8 @@ public class VendorTest {
 
     @Test
     void testVendorInventoryInitialization() {
-        assertEquals(10, vendor.getStock("Candy"), "Vendor should have 10 Candy.");
-        assertEquals(5, vendor.getStock("Gum"), "Vendor should have 5 Gum.");
+        assertEquals(10, v.getStock("Candy"), "Vendor should have 10 Candy.");
+        assertEquals(5, v.getStock("Gum"), "Vendor should have 5 Gum.");
     }
 
     @Test
@@ -103,5 +108,22 @@ public class VendorTest {
             System.out.println("Testing Vendor " + (i + 1) + " inventory:");
             vendors[i].printInventory();
         }
+    }
+
+    @Test
+    void testRemoveItem() {
+        assertEquals(6, vendors[0].getStock("Candy"), "Initial stock of Candy should be 5.");
+
+        vendors[0].removeItem("Candy");
+
+        assertEquals(-1, vendors[0].getStock("Candy"), "Candy should no longer exist in the inventory.");
+        assertEquals(9, vendors[0].getStock("Gum"), "Gum should still be in the inventory.");
+    }
+
+    @Test
+    void testRemoveNonExistentItem() {
+        v.removeItem("Soda");
+
+        assertEquals(-1, v.getStock("Soda"), "Non-existent item should not be removed or added.");
     }
 }
