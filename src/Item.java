@@ -36,4 +36,8 @@ class Item {
     public void increaseStock(int quantity) {
         stock += quantity;
     }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }
