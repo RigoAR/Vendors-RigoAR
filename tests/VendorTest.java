@@ -1,6 +1,5 @@
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class VendorTest {
@@ -9,7 +8,7 @@ public class VendorTest {
 
     @BeforeEach
     public void setUp() {
-        v = new Vending(5, 5);
+        v = new Vending();
         vendors = new Vending[5];
         vendors[0] = new Vending(5, 10);
         vendors[1] = new Vending(10, 15);
@@ -33,6 +32,7 @@ public class VendorTest {
         v.select("Candy");
         assertEquals(4, v.getStock("Candy"), "Candy stock should decrease by 1 after purchase.");
         assertEquals(0.75, v.getBalance(), "Balance should decrease by the item's price ($1.25).");
+        assertEquals(1, v.getPurchaseTrends().get("Candy"), "Candy purchase count should be updated.");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class VendorTest {
         assertEquals(5, v.getStock("Candy"), "Initial stock of Candy should be 5.");
 
         int result = v.renameItem("Candy", "Gum");
-        assertEquals(10, result, "Rename should be successful.");
+        assertEquals(5, result, "Rename should be successful.");
 
         assertEquals(-1, v.getStock("Candy"), "Candy should be removed after renaming.");
 
@@ -104,19 +104,12 @@ public class VendorTest {
 
     @Test
     void testVendorInventoryInitialization() {
-        assertEquals(5, v.getStock("Candy"), "Vendor should have 10 Candy.");
+        assertEquals(5, v.getStock("Candy"), "Vendor should have 5 Candy.");
         assertEquals(5, v.getStock("Gum"), "Vendor should have 5 Gum.");
     }
 
     @Test
     void testMultipleVendorsInventory() {
-        Vending[] vendors = new Vending[5];
-        vendors[0] = new Vending(10, 5);
-        vendors[1] = new Vending(20, 10);
-        vendors[2] = new Vending(30, 15);
-        vendors[3] = new Vending(5, 25);
-        vendors[4] = new Vending(50, 0);
-
         for (int i = 0; i < vendors.length; i++) {
             assertNotNull(vendors[i], "Vendor " + (i + 1) + " should be initialized.");
             System.out.println("Testing Vendor " + (i + 1) + " inventory:");
@@ -140,5 +133,22 @@ public class VendorTest {
         v.removeItem("Soda");
 
         assertEquals(-1, v.getStock("Soda"), "Non-existent item should not be removed or added.");
+    }
+
+    @Test
+    void testPurchaseTrends() {
+        v.addMoney(10.00);
+        v.select("Candy");
+        v.select("Candy");
+        v.select("Gum");
+
+        assertEquals(2, v.getPurchaseTrends().get("Candy"), "Candy should have 2 purchases.");
+        assertEquals(1, v.getPurchaseTrends().get("Gum"), "Gum should have 1 purchase.");
+    }
+
+    @Test
+    void testRestockItemWithNegativeAmount() {
+        v.restockItem("Candy", -5);
+        assertEquals(5, v.getStock("Candy"), "Restocking with negative amount should not change stock.");
     }
 }
