@@ -5,7 +5,7 @@ import java.util.HashMap;
  * well as the current balance of money that has been deposited into the machine.
  */
 class Vending {
-    private static HashMap<String, Item> Stock = new HashMap<String, Item>();
+    private HashMap<String, Item> Stock = new HashMap<>();
     private double balance;
 
     Vending(int numCandy, int numGum) {
@@ -32,9 +32,8 @@ class Vending {
             if (balance >= item.price) {
                 item.purchase(1);
                 this.balance = this.balance - item.price;
-            } else {
+            } else
                 System.out.println("Gimme more money");
-            }
         } else {
             System.out.println("Sorry, don't know that item");
         }
@@ -69,12 +68,21 @@ class Vending {
         if (Stock.containsKey(oldName)) {
             Item item = Stock.get(oldName);
             Stock.remove(oldName);
-            Stock.put(newName, item);
+            Stock.put(newName, new Item(item.price, item.stock));
             System.out.println("Item renamed from " + oldName + " to " + newName);
             return 10;
         } else {
             System.out.println("Item not found to rename");
             return -1;
+        }
+    }
+
+    void removeItem(String name) {
+        if (Stock.containsKey(name)) {
+            Stock.remove(name);
+            System.out.println(name + " has been removed.");
+        } else {
+            System.out.println(name + " not found.");
         }
     }
 
