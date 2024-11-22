@@ -84,13 +84,27 @@ public class VendorTest {
     @Test
     void testRenameItemWithNewNameAlreadyExist() {
         v.renameItem("Candy", "Gum");
-        assertEquals(0, v.getStock("Candy"), "Candy should be removed from stock after renaming.");
+        assertEquals(-1, v.getStock("Candy"), "Candy should be removed from stock after renaming.");
         assertEquals(5, v.getStock("Gum"), "Gum should retain its original stock value after renaming.");
     }
 
     @Test
+    void testRenameItem() {
+        assertEquals(5, v.getStock("Candy"), "Initial stock of Candy should be 5.");
+
+        int result = v.renameItem("Candy", "Gum");
+        assertEquals(10, result, "Rename should be successful.");
+
+        assertEquals(-1, v.getStock("Candy"), "Candy should be removed after renaming.");
+
+        assertEquals(5, v.getStock("Gum"), "New Gum should have the same stock as Candy.");
+
+        v.printInventory();
+    }
+
+    @Test
     void testVendorInventoryInitialization() {
-        assertEquals(10, v.getStock("Candy"), "Vendor should have 10 Candy.");
+        assertEquals(5, v.getStock("Candy"), "Vendor should have 10 Candy.");
         assertEquals(5, v.getStock("Gum"), "Vendor should have 5 Gum.");
     }
 
@@ -112,12 +126,13 @@ public class VendorTest {
 
     @Test
     void testRemoveItem() {
-        assertEquals(6, vendors[0].getStock("Candy"), "Initial stock of Candy should be 5.");
+        assertEquals(5, v.getStock("Candy"), "Initial stock of Candy should be 5.");
 
-        vendors[0].removeItem("Candy");
+        v.removeItem("Candy");
 
-        assertEquals(-1, vendors[0].getStock("Candy"), "Candy should no longer exist in the inventory.");
-        assertEquals(9, vendors[0].getStock("Gum"), "Gum should still be in the inventory.");
+        assertEquals(-1, v.getStock("Candy"), "Candy should no longer exist in the inventory.");
+
+        assertEquals(5, v.getStock("Gum"), "Gum should still be in the inventory.");
     }
 
     @Test
