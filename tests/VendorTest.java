@@ -83,5 +83,22 @@ public class VendorTest {
         v.restockItem("Candy", 5);
         assertEquals(10, v.getStock("Candy"));
     }
+    @Test
+    void testRenameNonExistentItem()
+    {
+
+        v.renameItem("Soda", "Cola");
+
+        assertEquals(v.getStock(null), v.getStock("Cola"));
+        assertEquals(v.getStock(null), v.getStock("Soda"));
+    }
+
+    @Test
+    void testRenameItemWithNewNameAlreadyExist()
+    {
+        v.renameItem("Candy", "Gum");
+
+        assertEquals(v.getStock(null), v.getStock("Candy"));
+    }
 
 }
