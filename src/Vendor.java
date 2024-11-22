@@ -30,6 +30,25 @@ class Vending {
         inventory.put("Gum", new Item("Gum", 0.75, gumStock, "Refreshing mint-flavored gum."));
     }
 
+    public Item getItem(String itemName) {
+        return inventory.getOrDefault(itemName, null);
+    }
+
+    public void applyDiscount(String itemName, double discount) {
+        Item item = getItem(itemName);
+        if (item != null && discount > 0) {
+            double price = item.getPrice();
+            double newPrice = price - (price * discount);
+            item.setPrice(newPrice);
+        }
+    }
+
+    public void applyCategoryDiscount(String[] itemNames, double discountPercentage) {
+        for (String itemName : itemNames) {
+            applyDiscount(itemName, discountPercentage);
+        }
+    }
+
     public void addMoney(double amount) {
         balance += amount;
     }
